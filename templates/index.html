@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='master.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='socket.io.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            namespace = '/event';
+            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+
+            socket.on('connect', function(msg) {
+                socket.emit('create', {
+                    data: 'I\'m connected!'
+                });
+            });
+            <!-- Catch event reply from flask app -->
+            socket.on('message', function(msg) {
+                console.log(msg)
+                if (msg.type == 'button') {
+                    addButton(msg.attributes)
+                } else if (msg.type == 'schedule' || msg.type == 'interval') {
+                    addSchedule(msg.attributes)
+                }
+            });
+        });
+    </script>
+    <title>Title</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="topnav" id="topnav">
+            <a href="#add">Add Button/Schedule</a>
+        </div>
+        <div id="add" class="modalDialog">
+            <div>
+                <a href="#close" title="Close" id="close">X</a>
+                <form id="myForm">
+                    Name: <input type="text" name="event-name" id="event-name" maxlength="9"><br>
+                    API URL: http://<input type="text" name="api-url" id="api-url" size=100><br>
+                    <input type="radio" name="action-type" id="create-button" value="create-button" onclick="typeSelect('button')" checked>
+                    <label for="create-button">Assign Button</label>
+                    <input type="radio" name="action-type" id="schedule-action" value="schedule-action" onclick="typeSelect('schedule')">
+                    <label for="schedule-action">Schedule Action</label><br>
+                    <label for="start-time-selector">Start Time: </label>
+                    <input type="datetime-local" name="start-time-selector" id="start-time-selector" disabled />
+                    <label for="end-time-selector">End Time: </label>
+                    <input type="datetime-local" name="end-time-selector" id="end-time-selector" disabled />
+                    or set <input type="number" id="interval" name="interval" min="1" max="100" size=3 disabled> seconds intervals.<br>
+                    <button type="button" onclick="SubForm()">Add</button>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="controls-container">
+            <!-- right hand scheduled event list-->
+            <div class="schedule-container">
+                <h2>Scheduled Actions</h2>
+                <table id="schedule-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Next Schedule Time</th>
+                            <th scope="col">Interval</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                        <tr id={{job.id}}>
+                            <td>{{job.next_run_time.strftime('%d-%m-%Y %H:%M')}}</td>
+                            <td>{{job.args[2]}}</td>
+                            <td>{{job.args[0]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- shortcut buttons-->
+            <div class="matrix-container">
+                <ul id="buttons">
+                    {% for button in buttons %}
+                    <li id={{button.id}}>
+                        <a herf="#" onclick="controllerButtonPress('{{button.url}}')">
+                            <span>{{button.name}}</span>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
