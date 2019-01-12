@@ -1,2 +1,2 @@
-## vMic Custom Controller
+## vMix Custom Controller
 
