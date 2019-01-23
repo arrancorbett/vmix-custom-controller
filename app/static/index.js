@@ -1,17 +1,16 @@
 function SubForm() {
     if (validateForm()) {
         $.ajax({
-                url: '/formSubmit',
-                type: 'post',
-                data: $('#myForm').serialize(),
-                success: function(response) {
-                    console.log(response);
-                },
-                error: function(error) {
-                    console.log(error);
-                }
+            url: '/formSubmit',
+            type: 'post',
+            data: $('#myForm').serialize(),
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(error) {
+                console.log(error);
             }
-        );
+        });
     }
 }
 
@@ -92,23 +91,23 @@ function addSchedule(attributes) {
 }
 
 function controllerButtonPress(url) {
-     var settings= {
+    var settings = {
 
-         "async": true,
-         "crossDomain": true,
-         "url": "http://" + url,
-         "method": "POST",
-         "headers": {
-             "Content-Type": "application/x-www-form-urlencoded",
-         }
+        "async": true,
+        "crossDomain": true,
+        "url": "http://" + url,
+        "method": "POST",
+        "headers": {
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
 
-         ,
-         "data": {}
-     }
+        ,
+        "data": {}
+    }
 
-     $.ajax(settings).done(function (response) {
-         console.log(response);
-     }
+    $.ajax(settings).done(function(response) {
+            console.log(response);
+        }
 
-     );
- }
+    );
+}
